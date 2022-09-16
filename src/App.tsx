@@ -1,25 +1,49 @@
 import "./styles/main.css";
 
-import { SupabaseClient } from "@supabase/supabase-js";
-import { useEffect } from "react";
-import { GameBanner } from "./components/GameBanner";
+import { PostgrestResponse, SupabaseClient } from "@supabase/supabase-js";
+import { useEffect, useState } from "react";
+import { GameBanner, GameBannerProps } from "./components/GameBanner";
 import { supabase } from "./services/supabase";
-import { getTopGames } from "./services/twitch";
+import { getTopGames, TwitchGame } from "./services/twitch";
 
+import * as Dialog from "@radix-ui/react-dialog";
+import GameControllerIcon from "./assets/GameController.svg";
 import logoImg from "./assets/logo.svg";
-import searchIcon from "./assets/MagnifyingGlassPlus.svg";
+import { CreateAdBanner } from "./components/CreateAdBanner";
+
+interface GameCount {
+  count: number;
+  game_id: number;
+}
+interface GameCountIndex {
+  [key: number]: number;
+}
 
 function App() {
+  const [games, setGames] = useState<GameBannerProps[]>([]);
+
   useEffect(() => {
     const fetchData = async (supabase: SupabaseClient) => {
-      let { data: game_listings, error } = await supabase
-        .from("game_listings")
-        .select("name");
+      const { data: gameListings, error } = (await supabase
+        .from("grouped_game_listings")
+        .select("*")) as PostgrestResponse<GameCount>;
 
-      console.log(game_listings);
+      const gameCountIndex: GameCountIndex = {};
+      gameListings?.forEach(
+        (item) => (gameCountIndex[item.game_id] = item.count)
+      );
 
       const topGames = await getTopGames();
-      console.log(topGames); // size 285x380
+      const parsedGames = topGames.map((game: TwitchGame) => {
+        return {
+          title: game.name,
+          bannerUrl: game.box_art_url
+            .replace("{width}", "285")
+            .replace("{height}", "380"),
+          adsCount: gameCountIndex[game.id] || 0,
+        };
+      });
+      setGames(parsedGames);
     };
 
     fetchData(supabase);
@@ -36,30 +60,92 @@ function App() {
         is here.
       </h1>
       <div className="grid grid-cols-6 gap-6 mt-16">
-        <GameBanner />
-        <GameBanner />
-        <GameBanner />
-        <GameBanner />
-        <GameBanner />
-        <GameBanner />
+        {games.slice(0, 6).map((game) => {
+          return (
+            <GameBanner
+              key={game.title}
+              bannerUrl={game.bannerUrl}
+              title={game.title}
+              adsCount={game.adsCount}
+            />
+          );
+        })}
       </div>
 
-      <div className="pt-1 mt-8 bg-duo-gradient self-stretch rounded-lg overflow-hidden">
-        <div className="bg-[#2A2634] py-6 px-8 self-stretch rounded flex justify-between items-center">
-          <div>
-            <strong className="text-2xl text-white font-black block">
-              Didn't find your duo?
-            </strong>
-            <span className="text-zinc-400 mt-1 block">
-              Publish a listing to find new players!
-            </span>
-          </div>
-          <button className="py-3 px-4 bg-violet-500 text-white rounded flex gap-3 transition-colors hover:bg-violet-600">
-            <img src={searchIcon} alt="Magnifying Glass Icon" />
-            Publish Listing
-          </button>
-        </div>
-      </div>
+      <Dialog.Root>
+        <CreateAdBanner />
+
+        <Dialog.Portal>
+          <Dialog.Overlay className="bg-black/60 inset-0 fixed">
+            <Dialog.Content className="fixed bg-[#2A2634] py-8 px-10 text-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-lg w-[480px] shadow-lg shadow-black/25">
+              <Dialog.Title className="text-3xl font-black">
+                Publish a listing
+              </Dialog.Title>
+              <Dialog.Content>
+                <form>
+                  <div>
+                    <div>
+                      <label htmlFor="game">Which game?</label>
+                      <input
+                        placeholder="Select the game you wish to play"
+                        id="game"
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="name">Your name (or nickname)</label>
+                      <input
+                        id="name"
+                        placeholder="How you want to be called?"
+                      />
+                    </div>
+                    <div>
+                      <div>
+                        <label htmlFor="expertise">
+                          What's your expertise level?
+                        </label>
+                        <input id="expertise" placeholder="Choose a level..." />
+                      </div>
+                      <div>
+                        <label htmlFor="discord">What's your discord?</label>
+                        <input id="discord" placeholder="User#0000" />
+                      </div>
+                    </div>
+                    <div>
+                      <div>
+                        <label htmlFor="daysPlaying">
+                          When do you usually play?
+                        </label>
+                      </div>
+                      <div>
+                        <label htmlFor="hourStart">During which hours?</label>
+                        <div>
+                          <input
+                            id="hourStart"
+                            type="time"
+                            placeholder="From"
+                          />
+                          <input id="hourEnd" type="time" placeholder="Until" />
+                        </div>
+                      </div>
+                    </div>
+                    <div>
+                      <input type="checkbox" />I want to connect via Voice Chat
+                    </div>
+                  </div>
+
+                  <footer>
+                    <button>Cancel</button>
+                    <button type="submit">
+                      <img src={GameControllerIcon} alt="Game Controller" />
+                      Find Duo
+                    </button>
+                  </footer>
+                </form>
+              </Dialog.Content>
+            </Dialog.Content>
+          </Dialog.Overlay>
+        </Dialog.Portal>
+      </Dialog.Root>
     </div>
   );
 }

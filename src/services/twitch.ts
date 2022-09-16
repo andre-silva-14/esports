@@ -1,12 +1,12 @@
 import axios from "axios";
 
-interface Game {
+interface TwitchGame {
   id: number;
   name: string;
   box_art_url: string;
 }
 
-const TOP_COUNT = 26;
+const TOP_COUNT = 25;
 const EXCLUDED_IDS = [
   509658, 417752, 498566, 518203, 26936, 488190, 29452, 509659, 509660,
   1469308723, 509667, 116747788,
@@ -39,8 +39,9 @@ const getTopGames = async () => {
   });
 
   return await topGamesRequest.data.data.filter(
-    (game: Game) => !EXCLUDED_IDS.includes(Number(game.id))
+    (game: TwitchGame) => !EXCLUDED_IDS.includes(Number(game.id))
   );
 };
 
 export { getTopGames };
+export type { TwitchGame };
