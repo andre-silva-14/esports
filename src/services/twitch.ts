@@ -14,6 +14,7 @@ const EXCLUDED_IDS = [
 
 const OAuthUrl = "https://id.twitch.tv/oauth2/token";
 const getTopGamesUrl = `https://api.twitch.tv/helix/games/top?first=${TOP_COUNT}`;
+const getGameUrl = "https://api.twitch.tv/helix/games";
 
 const data = new URLSearchParams({
   client_id: import.meta.env.VITE_TWITCH_CLIENT_ID,
@@ -29,7 +30,7 @@ const getOAuthToken = async () => {
   return access_token;
 };
 
-const getTopGames = async () => {
+const getTopGames = async (): Promise<TwitchGame[]> => {
   const OAuthToken = await getOAuthToken();
   const topGamesRequest = await axios.get(getTopGamesUrl, {
     headers: {
@@ -43,5 +44,19 @@ const getTopGames = async () => {
   );
 };
 
-export { getTopGames };
-export type { TwitchGame };
+const getGame = async (id: string): Promise<TwitchGame> => {
+  const OAuthToken = await getOAuthToken();
+  const gameRequest = await axios.get(getGameUrl, {
+    headers: {
+      Authorization: `Bearer ${OAuthToken}`,
+      "Client-Id": import.meta.env.VITE_TWITCH_CLIENT_ID,
+    },
+    params: {
+      id: id,
+    },
+  });
+
+  return await gameRequest.data.data[0];
+};
+
+export { getTopGames, getGame };

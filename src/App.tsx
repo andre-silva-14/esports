@@ -4,7 +4,7 @@ import { PostgrestResponse, SupabaseClient } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
 import { GameBanner, GameBannerProps } from "./components/GameBanner";
 import { supabase } from "./services/supabase";
-import { getTopGames, TwitchGame } from "./services/twitch";
+import { getTopGames } from "./services/twitch";
 
 import * as Dialog from "@radix-ui/react-dialog";
 import GameControllerIcon from "./assets/GameController.svg";
@@ -34,8 +34,9 @@ function App() {
       );
 
       const topGames = await getTopGames();
-      const parsedGames = topGames.map((game: TwitchGame) => {
+      const parsedGames = topGames.map((game) => {
         return {
+          id: game.id,
           title: game.name,
           bannerUrl: game.box_art_url
             .replace("{width}", "285")
@@ -63,7 +64,8 @@ function App() {
         {games.slice(0, 6).map((game) => {
           return (
             <GameBanner
-              key={game.title}
+              key={game.id}
+              id={game.id}
               bannerUrl={game.bannerUrl}
               title={game.title}
               adsCount={game.adsCount}
