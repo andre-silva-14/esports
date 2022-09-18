@@ -13,11 +13,9 @@ export function CreateAdBanner() {
             Publish a listing to find new players!
           </span>
         </div>
-        <Dialog.Trigger>
-          <button className="py-3 px-4 bg-violet-500 text-white rounded flex gap-3 transition-colors hover:bg-violet-600">
-            <img src={searchIcon} alt="Magnifying Glass Icon" />
-            Publish Listing
-          </button>
+        <Dialog.Trigger className="py-3 px-4 bg-violet-500 text-white rounded flex gap-3 transition-colors hover:bg-violet-600">
+          <img src={searchIcon} alt="Magnifying Glass Icon" />
+          Publish Listing
         </Dialog.Trigger>
       </div>
     </div>
