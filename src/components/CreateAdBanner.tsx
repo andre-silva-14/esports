@@ -1,5 +1,5 @@
 import * as Dialog from "@radix-ui/react-dialog";
-import searchIcon from "../assets/MagnifyingGlassPlus.svg";
+import { MagnifyingGlassPlus } from "phosphor-react";
 
 export function CreateAdBanner() {
   return (
@@ -14,7 +14,7 @@ export function CreateAdBanner() {
           </span>
         </div>
         <Dialog.Trigger className="py-3 px-4 bg-violet-500 text-white rounded flex gap-3 transition-colors hover:bg-violet-600">
-          <img src={searchIcon} alt="Magnifying Glass Icon" />
+          <MagnifyingGlassPlus size={23} />
           Publish Listing
         </Dialog.Trigger>
       </div>

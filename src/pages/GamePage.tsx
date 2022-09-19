@@ -1,10 +1,10 @@
 import { PostgrestResponse, SupabaseClient } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import { supabase } from "../services/supabase";
 import { getGame } from "../services/twitch";
 
-import BackIcon from "../assets/CaretLeft.svg";
+import { CaretLeft } from "phosphor-react";
 import { AdCard } from "../components/AdCard";
 interface GameAd {
   test: number;
@@ -19,7 +19,6 @@ interface Game {
 const GamePage = (props: any) => {
   const params = useParams();
   const location = useLocation();
-  const navigate = useNavigate();
   const [game, setGame] = useState<Game>();
 
   const fetchGame = async () => {
@@ -56,7 +55,7 @@ const GamePage = (props: any) => {
           to={(() => (location.state ? (-1 as any) : "/"))()}
           className="inline-block w-10"
         >
-          <img src={BackIcon} alt="Back Icon" />
+          <CaretLeft size={40} color="#A1A1AA" />
         </Link>
         <h1 className="text-3xl text-white font-black m">{game?.name}</h1>
       </div>
