@@ -1,10 +1,13 @@
 import * as Checkbox from "@radix-ui/react-checkbox";
 import * as Dialog from "@radix-ui/react-dialog";
+
 import * as ToggleGroup from "@radix-ui/react-toggle-group";
 import axios from "axios";
 import { Check, GameController } from "phosphor-react";
 import { FormEvent, useState } from "react";
+import expertiseLevels from "../../utils/expertiseLevels";
 import { Input } from "./Input";
+import { SelectInput } from "./SelectInput";
 
 interface SimpleGame {
   id: number;
@@ -16,6 +19,8 @@ interface CreateAdModalProps {
 }
 
 export function CreateAdModal(props: CreateAdModalProps) {
+  const [selectedGame, setSelectedGame] = useState<string>("");
+  const [expertise, setExpertise] = useState<string>("");
   const [weekDays, setWeekDays] = useState<string[]>([]);
   const [useVoiceChannel, setUseVoiceChannel] = useState<boolean>(false);
 
@@ -27,9 +32,9 @@ export function CreateAdModal(props: CreateAdModalProps) {
     const data = Object.fromEntries(formData);
 
     try {
-      await axios.post(`http://localhost:3333/games/${data.game}/ads`, {
+      await axios.post(`http://localhost:3333/games/${selectedGame}/ads`, {
         name: data.name,
-        expertise: data.expertise,
+        expertise: expertise,
         discord: data.discord,
         weekDays: weekDays.map(Number),
         hourStart: data.hourStart,
@@ -53,24 +58,14 @@ export function CreateAdModal(props: CreateAdModalProps) {
             className="mt-8 flex flex-col gap-4"
           >
             <div className="flex flex-col gap-2">
-              <label htmlFor="game">Which game?</label>
-              <select
-                className="bg-zinc-900 py-3 px-4 rounded text-sm placeholder:text-zinc-500 appearance-none"
-                id="game"
-                name="game"
-                defaultValue={0}
-              >
-                <option value={0} disabled hidden>
-                  Select the game you wish to play
-                </option>
-                {props.games.map((game) => {
-                  return (
-                    <option key={game.id} value={game.id}>
-                      {game.title}
-                    </option>
-                  );
-                })}
-              </select>
+              <SelectInput
+                label="Which game?"
+                title="Available Games"
+                placeholder="Select a game..."
+                ariaLabel="game"
+                data={props.games}
+                onValueChange={setSelectedGame}
+              />
             </div>
 
             <div className="flex flex-col gap-2">
@@ -84,11 +79,13 @@ export function CreateAdModal(props: CreateAdModalProps) {
 
             <div className="grid grid-cols-2 gap-6">
               <div className="flex flex-col gap-2">
-                <label htmlFor="expertise">What's your expertise level?</label>
-                <Input
-                  id="expertise"
-                  name="expertise"
+                <SelectInput
+                  label="What's your expertise level?"
+                  title="Expertise Level"
                   placeholder="Choose a level..."
+                  ariaLabel="expertise"
+                  data={expertiseLevels}
+                  onValueChange={setExpertise}
                 />
               </div>
 

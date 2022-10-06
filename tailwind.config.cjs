@@ -1,4 +1,7 @@
 /** @type {import('tailwindcss').Config} */
+
+const plugin = require("tailwindcss/plugin");
+
 module.exports = {
   content: ["./src/**/*.tsx", "./index.html"],
   theme: {
@@ -15,5 +18,12 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    plugin(({ addVariant }) => {
+      addVariant("data-placeholder", "&[data-placeholder]");
+    }),
+    plugin(({ addVariant }) => {
+      addVariant("data-highlighted", "&[data-highlighted]");
+    }),
+  ],
 };
