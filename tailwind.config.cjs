@@ -3,7 +3,7 @@
 const plugin = require("tailwindcss/plugin");
 
 module.exports = {
-  content: ["./src/**/*.tsx", "./index.html"],
+  content: ["./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     fontFamily: {
       sans: ["Inter", "sans-serif"],

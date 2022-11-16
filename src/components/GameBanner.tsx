@@ -1,4 +1,5 @@
-import { Link } from "react-router-dom";
+import Image from "next/image";
+import Link from "next/link";
 
 export interface GameBannerProps {
   id: number;
@@ -10,11 +11,10 @@ export interface GameBannerProps {
 export function GameBanner(props: GameBannerProps) {
   return (
     <Link
-      to={`/${props.id}`}
-      state={{ title: props.title, bannerUrl: props.bannerUrl }}
+      href={`/${props.id}`}
       className="relative rounded-lg overflow-hidden [&:hover>div]:pb-6"
     >
-      <img src={props.bannerUrl} alt={props.title} />
+      <Image width={380} height={285} src={props.bannerUrl} alt={props.title} />
       <div className="w-full pt-16 pb-4 px-4 bg-game-gradient absolute bottom-0 left-0 right-0 transition-all duration-300">
         <strong className="font-bold text-white block">{props.title}</strong>
         <span className="text-zinc-300 text-sm block mt-1">

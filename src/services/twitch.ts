@@ -17,8 +17,8 @@ const getTopGamesUrl = `https://api.twitch.tv/helix/games/top?first=${TOP_COUNT}
 const getGameUrl = "https://api.twitch.tv/helix/games";
 
 const data = new URLSearchParams({
-  client_id: import.meta.env.VITE_TWITCH_CLIENT_ID,
-  client_secret: import.meta.env.VITE_TWITCH_CLIENT_SECRET,
+  client_id: process.env.TWITCH_CLIENT_ID as any,
+  client_secret: process.env.TWITCH_CLIENT_SECRET as any,
   grant_type: "client_credentials",
 });
 
@@ -35,7 +35,7 @@ const getTopGames = async (): Promise<TwitchGame[]> => {
   const topGamesRequest = await axios.get(getTopGamesUrl, {
     headers: {
       Authorization: `Bearer ${OAuthToken}`,
-      "Client-Id": import.meta.env.VITE_TWITCH_CLIENT_ID,
+      "Client-Id": process.env.TWITCH_CLIENT_ID,
     },
   });
 
@@ -49,7 +49,7 @@ const getGame = async (id: string): Promise<TwitchGame> => {
   const gameRequest = await axios.get(getGameUrl, {
     headers: {
       Authorization: `Bearer ${OAuthToken}`,
-      "Client-Id": import.meta.env.VITE_TWITCH_CLIENT_ID,
+      "Client-Id": process.env.TWITCH_CLIENT_ID,
     },
     params: {
       id: id,
