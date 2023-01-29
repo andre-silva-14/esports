@@ -1,12 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { getGame } from "../../../services/twitch";
-
-interface eSportsGame {
-  id: number;
-  title: string;
-  bannerUrl: string;
-  adsCount: number;
-}
+import { prisma } from "../../../../lib/prisma";
+import { getGame } from "../../../../services/twitch";
+import { eSportsGame } from "../../../../types/eSportsGame";
 
 export default async function handler(
   req: NextApiRequest,
@@ -17,13 +12,22 @@ export default async function handler(
   if (!gameId) return res.status(404);
 
   const game = await getGame(gameId as string);
+
+  const adCount = await prisma.ad.groupBy({
+    by: ["gameId"],
+    _count: true,
+    where: {
+      gameId: Number(gameId),
+    },
+  });
+
   const parsedGame = {
     id: game.id,
     title: game.name,
     bannerUrl: game.box_art_url
       .replace("{width}", "285")
       .replace("{height}", "380"),
-    adsCount: 0,
+    adsCount: adCount[0] ? adCount[0]._count : 0,
   };
   res.status(200).json(parsedGame);
 }

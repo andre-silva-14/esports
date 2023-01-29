@@ -1,25 +1,25 @@
-import axios from "axios";
+"use client";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/router";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { CaretLeft } from "phosphor-react";
-import { AdCard } from "../components/AdCard";
+import { AdCard } from "../../components/AdCard";
+import { eSportsGame } from "../../types/eSportsGame";
 
-interface Game {
-  title: string;
-  bannerUrl: string;
-}
+type SimpleGame = Pick<eSportsGame, "title" | "bannerUrl">;
 
-const GamePage = (props: any) => {
-  const [game, setGame] = useState<Game>();
-  const router = useRouter();
-  const { gameId } = router.query;
+const GamePage = () => {
+  const [game, setGame] = useState<SimpleGame>();
+  const pathname = usePathname();
+  const gameId = pathname?.split("/")[1];
 
   const fetchGame = async (id: string) => {
-    const gameDetailsRequest = await axios.get(`/api/games/${id}`);
-    const gameDetails = await gameDetailsRequest.data;
+    const gameDetailsRequest = await fetch(`/api/games/${id}`, {
+      cache: "force-cache",
+    });
+    const gameDetails = await gameDetailsRequest.json();
 
     setGame(gameDetails);
   };

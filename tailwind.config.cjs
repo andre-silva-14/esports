@@ -15,6 +15,11 @@ module.exports = {
           "linear-gradient(89.86deg, #9572FC 1.08%, #43E7AD 42.94%, #E1D55D 98.57%)",
         "game-gradient":
           "linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(8, 8, 8, 0.9) 64.08%)",
+        "game-gradient-skelton":
+          "linear-gradient(180deg, rgba(12, 12, 12, 0) 0%, rgba(21, 4, 51, 0.9) 64.08%)",
+      },
+      gridTemplateColumns: {
+        toast: "auto max-content",
       },
     },
   },

@@ -1,15 +1,10 @@
 import axios from "axios";
-
-interface TwitchGame {
-  id: number;
-  name: string;
-  box_art_url: string;
-}
+import { TwitchGame } from "../types/twitchGame";
 
 const TOP_COUNT = 25;
 const EXCLUDED_IDS = [
   509658, 417752, 498566, 518203, 26936, 488190, 29452, 509659, 509660,
-  1469308723, 509667, 116747788,
+  1469308723, 509667, 116747788, 509663,
 ];
 
 const OAuthUrl = "https://id.twitch.tv/oauth2/token";

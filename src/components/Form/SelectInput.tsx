@@ -4,6 +4,7 @@ import { CaretDown, CaretUp, Check } from "phosphor-react";
 interface SelectInputProps {
   label: string;
   title: string;
+  className: string;
   placeholder: string;
   ariaLabel: string;
   data: {
@@ -23,7 +24,7 @@ export function SelectInput(props: SelectInputProps) {
         value={props.value || undefined}
       >
         <Select.SelectTrigger
-          className=" bg-zinc-900 inline-flex items-center justify-between w-auto py-3 px-4 rounded text-sm data-placeholder:text-zinc-500"
+          className={`bg-zinc-900 inline-flex items-center justify-between w-auto py-3 px-4 rounded text-sm data-placeholder:text-zinc-500 ${props.className}`}
           aria-label={props.ariaLabel}
         >
           <Select.SelectValue

@@ -9,13 +9,17 @@ import expertiseLevels from "../../utils/expertiseLevels";
 import { Input } from "./Input";
 import { SelectInput } from "./SelectInput";
 
-interface SimpleGame {
-  id: number;
-  title: string;
-}
+import { ZodError } from "zod";
+import { AdSchema } from "../../schemas/adSchema";
+
+import { eSportsGame } from "../../types/eSportsGame";
+
+type SimpleGame = Pick<eSportsGame, "id" | "title">;
 
 interface CreateAdModalProps {
   games: SimpleGame[];
+  setToastState(state: boolean): void;
+  setFormState(state: boolean): void;
 }
 
 export function CreateAdModal(props: CreateAdModalProps) {
@@ -23,6 +27,24 @@ export function CreateAdModal(props: CreateAdModalProps) {
   const [expertise, setExpertise] = useState<string>("");
   const [weekDays, setWeekDays] = useState<string[]>([]);
   const [useVoiceChannel, setUseVoiceChannel] = useState<boolean>(false);
+  const [formHasError, setFormHasError] = useState<boolean>(false);
+  const [errorElement, setErrorElement] = useState<string>("");
+
+  const resetFormSubmission = (fullReset: boolean = false) => {
+    setFormHasError(false);
+    setErrorElement("");
+
+    if (fullReset) {
+      setSelectedGame("");
+      setExpertise("");
+      setWeekDays([]);
+      setUseVoiceChannel(false);
+    }
+  };
+
+  const handleFormUpdate = () => {
+    resetFormSubmission();
+  };
 
   const handleCreateListing = async (e: FormEvent) => {
     e.preventDefault();
@@ -32,18 +54,32 @@ export function CreateAdModal(props: CreateAdModalProps) {
     const data = Object.fromEntries(formData);
 
     try {
-      await axios.post(`http://localhost:3333/games/${selectedGame}/ads`, {
+      const parsedAd = AdSchema.parse({
+        gameId: selectedGame ? BigInt(selectedGame) : undefined,
         name: data.name,
         expertise: expertise,
         discord: data.discord,
-        weekDays: weekDays.map(Number),
+        weekDays: weekDays.map(Number).join(","),
         hourStart: data.hourStart,
         hourEnd: data.hourEnd,
         useVoiceChannel: useVoiceChannel,
       });
+
+      const { gameId, ...adData } = parsedAd;
+      await axios.post(`/api/games/${gameId}/ads`, adData);
     } catch (err) {
-      console.log(err);
+      if (err instanceof ZodError) {
+        setFormHasError(true);
+        setErrorElement(err.issues[0].path[0] as string);
+      }
+
+      console.error(err);
+      return;
     }
+
+    props.setFormState(false);
+    resetFormSubmission(true);
+    props.setToastState(true);
   };
 
   return (
@@ -55,43 +91,70 @@ export function CreateAdModal(props: CreateAdModalProps) {
           </Dialog.Title>
           <form
             onSubmit={handleCreateListing}
+            onChange={handleFormUpdate}
             className="mt-8 flex flex-col gap-4"
           >
             <div className="flex flex-col gap-2">
               <SelectInput
-                label="Which game?"
+                className={
+                  formHasError && errorElement === "gameId"
+                    ? "border border-rose-500"
+                    : ""
+                }
+                label="Game"
                 title="Available Games"
                 placeholder="Select a game..."
                 ariaLabel="game"
                 data={props.games}
+                value={selectedGame}
                 onValueChange={setSelectedGame}
               />
             </div>
 
             <div className="flex flex-col gap-2">
-              <label htmlFor="name">Your name (or nickname)</label>
+              <label htmlFor="name">Nickname</label>
               <Input
                 id="name"
                 name="name"
                 placeholder="How you want to be called?"
+                className={
+                  formHasError && errorElement === "name"
+                    ? "border border-rose-500"
+                    : ""
+                }
               />
             </div>
 
             <div className="grid grid-cols-2 gap-6">
               <div className="flex flex-col gap-2">
                 <SelectInput
-                  label="What's your expertise level?"
+                  label="Expertise"
                   title="Expertise Level"
                   placeholder="Choose a level..."
                   ariaLabel="expertise"
                   data={expertiseLevels}
+                  value={expertise}
                   onValueChange={setExpertise}
+                  className={
+                    formHasError && errorElement === "expertise"
+                      ? "border border-rose-500"
+                      : ""
+                  }
                 />
               </div>
 
               <div className="flex flex-col gap-2">
-                <label htmlFor="discord">What's your discord?</label>
-                <Input id="discord" name="discord" placeholder="User#0000" />
+                <label htmlFor="discord">Discord</label>
+                <Input
+                  id="discord"
+                  name="discord"
+                  placeholder="User#0000"
+                  className={
+                    formHasError && errorElement === "discord"
+                      ? "border border-rose-500"
+                      : ""
+                  }
+                />
               </div>
             </div>
 
@@ -162,7 +225,7 @@ export function CreateAdModal(props: CreateAdModalProps) {
               </div>
 
               <div className="flex flex-col gap-2">
-                <label htmlFor="hourStart">During which hours?</label>
+                <label htmlFor="hourStart">Hours Schedule</label>
                 <div className="grid grid-cols-2 gap-2">
                   <Input
                     id="hourStart"
@@ -200,7 +263,10 @@ export function CreateAdModal(props: CreateAdModalProps) {
             </label>
 
             <footer className="mt-4 flex justify-end gap-4">
-              <Dialog.Close className="bg-zinc-500 px-5 h-12 rounded-md font-semibold transition-colors hover:bg-zinc-600">
+              <Dialog.Close
+                className="bg-zinc-500 px-5 h-12 rounded-md font-semibold transition-colors hover:bg-zinc-600"
+                onClick={() => resetFormSubmission(true)}
+              >
                 Cancel
               </Dialog.Close>
               <button
