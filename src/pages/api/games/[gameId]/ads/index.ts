@@ -5,9 +5,22 @@ import { AdSchema } from "../../../../../schemas/adSchema";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Ad>
+  res: NextApiResponse<Ad | Ad[]>
 ) {
-  if (req.method === "POST") {
+  if (req.method === "GET") {
+    const { gameId } = req.query;
+    const ads = await prisma.ad.findMany({
+      where: { gameId: Number(gameId) },
+    });
+
+    const parsedJSON = JSON.parse(
+      JSON.stringify(ads, (key, value) =>
+        typeof value === "bigint" ? value.toString() : value
+      )
+    );
+
+    res.status(200).json(parsedJSON);
+  } else if (req.method === "POST") {
     const ad: Ad = req.body;
 
     const { gameId } = req.query;

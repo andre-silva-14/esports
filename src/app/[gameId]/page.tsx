@@ -1,19 +1,28 @@
 "use client";
-import Image from "next/image";
+import axios from "axios";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import useSWR from "swr";
 
+import { Ad } from "@prisma/client";
 import { CaretLeft } from "phosphor-react";
 import { AdCard } from "../../components/AdCard";
 import { eSportsGame } from "../../types/eSportsGame";
 
 type SimpleGame = Pick<eSportsGame, "title" | "bannerUrl">;
 
+const fetcher = (url: string) => axios.get(url).then((res) => res.data);
+
 const GamePage = () => {
   const [game, setGame] = useState<SimpleGame>();
   const pathname = usePathname();
   const gameId = pathname?.split("/")[1];
+  const {
+    data: ads,
+    error,
+    isLoading,
+  } = useSWR(`/api/games/${gameId}/ads`, fetcher);
 
   const fetchGame = async (id: string) => {
     const gameDetailsRequest = await fetch(`/api/games/${id}`, {
@@ -36,23 +45,21 @@ const GamePage = () => {
           <CaretLeft size={40} color="#A1A1AA" />
         </Link>
         {game && (
-          <h1 className="text-3xl text-white font-black m">{game.title}</h1>
+          <h1 className="text-3xl text-white font-black">{game.title}</h1>
         )}
       </div>
-      <div className="w-96 h-40 rounded-md overflow-hidden flex items-center mt-10">
-        {game && (
-          <Image
-            src={game.bannerUrl}
-            alt={game.title}
-            width={300}
-            height={100}
-          />
+      <div className="flex gap-6 mt-8 flex-wrap">
+        {!isLoading && ads.length > 0 ? (
+          ads.map((ad: Ad) => <AdCard key={ad.id} data={ad} />)
+        ) : (
+          <>
+            {isLoading ? (
+              <h2 className="text-xl text-white">Loading...</h2>
+            ) : (
+              <h2 className="text-xl text-white">No Listings found.</h2>
+            )}
+          </>
         )}
-      </div>
-      <div className="flex gap-6 mt-8">
-        <AdCard />
-        <AdCard />
-        <AdCard />
       </div>
     </div>
   );
