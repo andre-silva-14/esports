@@ -1,9 +1,13 @@
 "use client";
+import * as Dialog from "@radix-ui/react-dialog";
 import axios from "axios";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import useSWR from "swr";
+import { ConnectModal } from "../../components/ConnectModal";
+import { close } from "../../store/adSlice";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
 
 import { Ad } from "@prisma/client";
 import { CaretLeft } from "phosphor-react";
@@ -15,7 +19,9 @@ type SimpleGame = Pick<eSportsGame, "title" | "bannerUrl">;
 const fetcher = (url: string) => axios.get(url).then((res) => res.data);
 
 const GamePage = () => {
+  const dispatch = useAppDispatch();
   const [game, setGame] = useState<SimpleGame>();
+  const adModalState = useAppSelector((state) => state.ads.open);
   const pathname = usePathname();
   const gameId = pathname?.split("/")[1];
   const {
@@ -33,6 +39,12 @@ const GamePage = () => {
     setGame(gameDetails);
   };
 
+  function handleModalState(state: boolean) {
+    if (!state) {
+      dispatch(close());
+    }
+  }
+
   useEffect(() => {
     if (gameId) {
       fetchGame(gameId as string);
@@ -48,19 +60,26 @@ const GamePage = () => {
           <h1 className="text-3xl text-white font-black">{game.title}</h1>
         )}
       </div>
-      <div className="flex gap-6 mt-8 flex-wrap">
+      <div className="flex gap-6 mt-8 flex-wrap min-w-full">
         {!isLoading && ads.length > 0 ? (
           ads.map((ad: Ad) => <AdCard key={ad.id} data={ad} />)
         ) : (
           <>
             {isLoading ? (
-              <h2 className="text-xl text-white">Loading...</h2>
+              <h2 className="text-xl text-white text-center flex-1 mt-24">
+                Loading...
+              </h2>
             ) : (
-              <h2 className="text-xl text-white">No Listings found.</h2>
+              <h2 className="text-xl text-white text-center flex-1 mt-24">
+                No Listings found.
+              </h2>
             )}
           </>
         )}
       </div>
+      <Dialog.Root open={adModalState} onOpenChange={handleModalState}>
+        <ConnectModal />
+      </Dialog.Root>
     </div>
   );
 };

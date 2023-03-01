@@ -1,3 +1,4 @@
+import { Providers } from "../store/provider";
 import "../styles/main.css";
 
 export default function RootLayout({
@@ -14,7 +15,7 @@ export default function RootLayout({
         />
       </head>
       <body className="bg-[#121214] bg-galaxy bg-cover bg-no-repeat">
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
