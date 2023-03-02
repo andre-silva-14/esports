@@ -51,7 +51,7 @@ const GamePage = () => {
     }
   }, [gameId]);
   return (
-    <div className="m-20">
+    <div className="m-10 sm:m-20">
       <div className="flex gap-6 items-center">
         <Link href="/" className="inline-block w-10">
           <CaretLeft size={40} color="#A1A1AA" />

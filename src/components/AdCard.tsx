@@ -45,7 +45,7 @@ export function AdCard({ data }: AdCardProps) {
   }
 
   return (
-    <div className="w-48 h-70 bg-[#2A2634] shadow-sm p-4 rounded-lg flex flex-col gap-2">
+    <div className="w-[90%] min-[444px]:w-40 sm:w-48 h-70 bg-[#2A2634] shadow-sm p-4 rounded-lg flex flex-col gap-2">
       <DetailInfo label="Nickname" text={data.name} />
       <DetailInfo label="Expertise" text={expertise} />
       <DetailInfo label="Availability" text={availability} />

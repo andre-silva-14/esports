@@ -26,14 +26,14 @@ export default function Home() {
   return (
     <div className="max-w-[1344px] mx-auto flex flex-col items-center mt-20">
       <Image src={logoImg} alt="esports" />
-      <h1 className="text-6xl text-white font-black mt-20">
+      <h1 className="text-6xl text-white font-black mt-20 px-10">
         Your{" "}
         <span className="bg-duo-gradient bg-clip-text text-transparent">
           duo
         </span>{" "}
         is here.
       </h1>
-      <div className="grid grid-cols-6 gap-6 mt-16">
+      <div className="mx-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6 mt-16">
         {isLoading
           ? [...Array(6)].map((_, i) => <GameBannerSkelton key={i} />)
           : games.slice(0, 6).map((game: eSportsGame) => {
