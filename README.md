@@ -1,16 +1,21 @@
-# Work In Progress..
+# ESports
+
+![ESports Preview](https://raw.githubusercontent.com/andre-silva-14/esports/master/.github/preview.png)
+
+Find a duo to play your favorite video games and connect with others. A full stack web app built with NextJS.
+
+## Technologies
+
+- [ReactJS](https://reactjs.org/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [NextJS](https://nextjs.org/)
+- [ReduxToolkit](https://redux-toolkit.js.org/)
+- [TailwindCSS](https://tailwindcss.com/)
+- [RadixUI](https://www.radix-ui.com/)
+- [Zod](https://github.com/colinhacks/zod)
+- [SWR](https://swr.vercel.app/)
+- [Prisma](https://www.prisma.io/)
 
 # TODO
 
-- [ ] Responsiveness
-- [ ] Carrousel (Keen-Slider?)
-- [ ] Finish Form Elements and optimize selects with Radix
-- [ ] Add Form Validation (react-hook-form? / Schema Validation)
-- [ ] Integrate form submission with SupaBase
-- [ ] Adjust UI size (90%)
-- [ ] Finish Game Details Page to display the Listing Cards and details.
-- [ ] Add Loading Elements
-- [ ] Organize types and leverage Pick https://www.typescriptlang.org/docs/handbook/utility-types.html#picktype-keys
-- [ ] Hint: If you use prisma, use MySQL instead and use PlanetScale for hosting https://www.youtube.com/live/ZDSiAwuoX0c?feature=share&t=2922
-
-https://www.prisma.io/nextjs
+- [ ] Carrousel - [keen-slider](https://keen-slider.io/)
