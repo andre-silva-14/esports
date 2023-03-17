@@ -3,6 +3,21 @@ import { prisma } from "../../../../lib/prisma";
 import { getGame } from "../../../../services/twitch";
 import { eSportsGame } from "../../../../types/eSportsGame";
 
+const PrismaQuery = async (gameId: string | string[]) => {
+  try {
+    return await prisma.ad.groupBy({
+      by: ["gameId"],
+      _count: true,
+      where: {
+        gameId: Number(gameId),
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+};
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<eSportsGame>
@@ -13,13 +28,7 @@ export default async function handler(
 
   const game = await getGame(gameId as string);
 
-  const adCount = await prisma.ad.groupBy({
-    by: ["gameId"],
-    _count: true,
-    where: {
-      gameId: Number(gameId),
-    },
-  });
+  const adCount = await PrismaQuery(gameId);
 
   const parsedGame = {
     id: game.id,

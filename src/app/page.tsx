@@ -13,14 +13,16 @@ import { CreateAdModal } from "../components/Form/CreateAdModal";
 import { GameBannerSkelton } from "../components/GameBannerSkelton";
 
 import { useState } from "react";
-import { SuccessToast } from "../components/SuccessToast";
+import { StatusToast } from "../components/StatusToast";
 import { eSportsGame } from "../types/eSportsGame";
 
 const fetcher = (url: string) => axios.get(url).then((res) => res.data);
 
 export default function Home() {
   const { data: games, error, isLoading } = useSWR("/api/games/top", fetcher);
-  const [toastIsOpen, setToastIsOpen] = useState(false);
+  const [successToastIsOpen, setSuccessToastIsOpen] = useState(false);
+  const [failureToastIsOpen, setFailureToastIsOpen] = useState(false);
+  const [failureToastMessage, setFailureToastMessage] = useState("");
   const [formIsOpen, setFormIsOpen] = useState<boolean>(false);
 
   return (
@@ -53,15 +55,25 @@ export default function Home() {
         <CreateAdBanner isLoading={isLoading} />
         <CreateAdModal
           games={games}
-          setToastState={setToastIsOpen}
+          setSuccessToastState={setSuccessToastIsOpen}
+          setFailureToastState={setFailureToastIsOpen}
+          setFailureToastMessage={setFailureToastMessage}
           setFormState={setFormIsOpen}
         />
       </Dialog.Root>
-      <SuccessToast
+      <StatusToast
         title="Success"
         description="Listing was added successfully!"
-        status={toastIsOpen}
-        setStatus={setToastIsOpen}
+        status={successToastIsOpen}
+        setStatus={setSuccessToastIsOpen}
+      />
+      <StatusToast
+        title="Failure!"
+        description={failureToastMessage}
+        status={failureToastIsOpen}
+        setStatus={setFailureToastIsOpen}
+        backgroundColor="bg-red-900"
+        duration={5000}
       />
     </div>
   );

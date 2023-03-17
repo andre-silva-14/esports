@@ -2,7 +2,7 @@ import * as Checkbox from "@radix-ui/react-checkbox";
 import * as Dialog from "@radix-ui/react-dialog";
 
 import * as ToggleGroup from "@radix-ui/react-toggle-group";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { Check, GameController } from "phosphor-react";
 import { FormEvent, useState } from "react";
 import expertiseLevels from "../../utils/expertiseLevels";
@@ -18,7 +18,9 @@ type SimpleGame = Pick<eSportsGame, "id" | "title">;
 
 interface CreateAdModalProps {
   games: SimpleGame[];
-  setToastState(state: boolean): void;
+  setSuccessToastState(state: boolean): void;
+  setFailureToastState(state: boolean): void;
+  setFailureToastMessage(message: string): void;
   setFormState(state: boolean): void;
 }
 
@@ -71,6 +73,9 @@ export function CreateAdModal(props: CreateAdModalProps) {
       if (err instanceof ZodError) {
         setFormHasError(true);
         setErrorElement(err.issues[0].path[0] as string);
+      } else if (err instanceof AxiosError) {
+        props.setFailureToastState(true);
+        props.setFailureToastMessage(err.message);
       }
 
       console.error(err);
@@ -79,7 +84,7 @@ export function CreateAdModal(props: CreateAdModalProps) {
 
     props.setFormState(false);
     resetFormSubmission(true);
-    props.setToastState(true);
+    props.setSuccessToastState(true);
   };
 
   return (

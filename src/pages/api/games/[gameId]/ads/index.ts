@@ -3,15 +3,24 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "../../../../../lib/prisma";
 import { AdSchema } from "../../../../../schemas/adSchema";
 
+const PrismaQueryGET = async (gameId: string | string[] | undefined) => {
+  try {
+    return await prisma.ad.findMany({
+      where: { gameId: Number(gameId) },
+    });
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+};
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Ad | Ad[]>
 ) {
   if (req.method === "GET") {
     const { gameId } = req.query;
-    const ads = await prisma.ad.findMany({
-      where: { gameId: Number(gameId) },
-    });
+    const ads = await PrismaQueryGET(gameId);
 
     const parsedJSON = JSON.parse(
       JSON.stringify(ads, (key, value) =>

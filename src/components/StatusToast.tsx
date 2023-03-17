@@ -6,13 +6,17 @@ interface SuccessToastProps {
   description: string;
   status: boolean;
   setStatus: Dispatch<SetStateAction<boolean>>;
+  backgroundColor?: string;
+  duration?: number;
 }
 
-export function SuccessToast(props: SuccessToastProps) {
+export function StatusToast(props: SuccessToastProps) {
+  const { backgroundColor = "bg-green-700", duration = 3000 } = props;
+
   return (
-    <Toast.Provider swipeDirection="right" duration={3000}>
+    <Toast.Provider swipeDirection="right" duration={duration}>
       <Toast.Root
-        className="bg-green-700 rounded-md shadow p-4 grid grid-cols-toast grid-rows-2 gap-x-4 items-center"
+        className={`${backgroundColor} rounded-md shadow p-4 grid grid-cols-toast grid-rows-2 gap-x-4 items-center`}
         open={props.status}
         onOpenChange={props.setStatus}
       >
