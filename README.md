@@ -18,10 +18,11 @@ Find a duo to play your favorite video games and connect with others. A full sta
 
 ## Development setup
 
-$ yarn install
-$ yarn prisma generate
+    $ yarn install
+    $ yarn prisma generate
 
 Set your `TWITCH_CLIENT_ID` and `TWITCH_CLIENT_SECRET` in `.env.local`.
+
 Set your `DATABASE_URL` and `SHADOW_DATABASE_URL` in `.env`.
 
 ## TODO
